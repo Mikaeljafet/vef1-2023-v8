@@ -25,21 +25,55 @@ const products = [
 /** Bæta vöru í körfu */
 function addProductToCart(product, quantity) {
   // Hér þarf að finna `<tbody>` í töflu og setja `cartLine` inn í það
-  const cart = document.querySelector('.cart-content');
+  const cart = document.querySelector('.cart-content tbody');
 
   if (!cart) {
-    console.warn('fann ekki .cart');
+    console.warn('fann ekki .cart-content tbody');
     return;
   }
   
   // TODO hér þarf að athuga hvort lína fyrir vöruna sé þegar til
-  const cartLine = createCartLine(product, quantity);
-  cart.appendChild(cartLine);
+  let cartLine = cart.querySelector(`tr[data-cart-product-id="${product.id}"]`);
+  if (cartLine) {
+    // Ef vöru er nú þegar í körfunni, uppfæra fjöldann og heildarverðið
+    let quantityElement = cartLine.querySelector('.quantity');
+    let totalElement = cartLine.querySelector('.total .price'); // Bæta við þessari línu
+    let currentQuantity = parseInt(quantityElement.textContent);
+    let newQuantity = currentQuantity + quantity;
+    quantityElement.textContent = newQuantity;
+    totalElement.textContent = `${formatNumber(product.price * newQuantity)} kr.-`; // Uppfæra heildarverðið
+    updateCartTotal();
+  } else {
+    // Ef ekki, bæta við nýrri línu
+    const newCartLine = createCartLine(product, quantity);
+    cart.appendChild(newCartLine);
+    updateCartTotal();
+  }
 
   // Sýna efni körfu
   showCartContent(true);
 
   // TODO sýna/uppfæra samtölu körfu
+  updateCartTotal();
+}
+
+  export function updateCartTotal() {
+  // Finna allar línur í körfunni
+  const cartLines = document.querySelectorAll('tr[data-cart-product-id]');
+  let total = 0;
+
+  // Reikna heildarverðið
+  cartLines.forEach(line => {
+    const priceElement = line.querySelector('.total .price');
+    const price = parseFloat(priceElement.textContent.replace(' kr.-', '').replace('.', ''));
+    total += price;
+  });
+
+  // Uppfæra heildarverðið í DOM
+  const totalElement = document.querySelector('.cart-total .price'); // Gæti þurft að breyta vísuninni ef heildarverðið er staðsett annars staðar
+  if (totalElement) {
+    totalElement.textContent = `${formatNumber(total)} kr.-`;
+  }
 }
 
 function submitHandler(event) {
@@ -47,19 +81,25 @@ function submitHandler(event) {
   event.preventDefault();
   
   // Finnum næsta element sem er `<tr>`
-  const parent = event.target.closest('tr')
+  const parent = event.target.closest('tr');
 
   // Það er með attribute sem tiltekur auðkenni vöru, t.d. `data-product-id="1"`
   const productId = Number.parseInt(parent.dataset.productId);
 
   // Finnum vöru með þessu productId
-  const product = products.find((i) => i.id === productId);
+  const product = products.find((p) => p.id === productId);
 
-  // TODO hér þarf að finna fjölda sem á að bæta við körfu með því að athuga
-  // á input
-  const quantity = 1;
+  // Finnum input elementið fyrir fjölda og náum í fjöldann
+  const quantityInput = parent.querySelector('input[type="number"]');
+  const quantity = parseInt(quantityInput.value, 10); // Þetta tryggir að við fáum töluna í tugakerfi
 
-  // Bætum vöru í körfu (hér væri gott að bæta við athugun á því að varan sé til)
+  // Athugum hvort fjöldinn sé gildur
+  if (isNaN(quantity) || quantity <= 0) {
+    console.error('Fjöldi er ekki gildur');
+    return;
+  }
+
+  // Bætum vöru í körfu
   addProductToCart(product, quantity);
 }
 
