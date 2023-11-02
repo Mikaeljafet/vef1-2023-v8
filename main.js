@@ -59,8 +59,8 @@ function handleCheckout(event) {
 
 // Bæta við event listener á pöntunarformið
 document.addEventListener('DOMContentLoaded', (event) => {
-  // Bæta við event listener á pöntunarformið sem ekki hefur class="add"
-  const checkoutForm = document.querySelector('form[method="post"]:not(.add)');
+  
+  const checkoutForm = document.querySelector('#checkout-form');
   if (checkoutForm) {
     checkoutForm.addEventListener('submit', handleCheckout);
   } else {
