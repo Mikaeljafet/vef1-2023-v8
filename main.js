@@ -24,7 +24,7 @@ const products = [
 
 // Þessi fall mun vera kallað þegar pöntunarformið er sent inn
 function handleCheckout(event) {
-  event.preventDefault(); // Komum í veg fyrir að formið sendi gögnin áfram með hefðbundnum hætti
+  event.preventDefault(); 
 
   // Náum í gögnin úr formi
   const name = document.querySelector('#name').value;
@@ -35,6 +35,16 @@ function handleCheckout(event) {
     alert('Vinsamlegast fylltu út nafn og heimilisfang.');
     return;
   }
+
+  document.addEventListener('DOMContentLoaded', (event) => {
+    // Bæta við event listener á pöntunarformið
+    const checkoutForm = document.querySelector('form:not(.add)');
+    if (checkoutForm) {
+      checkoutForm.addEventListener('submit', handleCheckout);
+    } else {
+      console.error('Pöntunarform fannst ekki!');
+    }
+  });
 
   // Sýna kvittun
   const receiptSection = document.querySelector('.receipt');
