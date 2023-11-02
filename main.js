@@ -22,6 +22,47 @@ const products = [
   },
 ];
 
+// Þessi fall mun vera kallað þegar pöntunarformið er sent inn
+function handleCheckout(event) {
+  event.preventDefault(); // Komum í veg fyrir að formið sendi gögnin áfram með hefðbundnum hætti
+
+  // Náum í gögnin úr formi
+  const name = document.querySelector('#name').value;
+  const address = document.querySelector('#address').value;
+
+  // Hér gætirðu viljað bæta við frekari staðfestingu á gögnunum
+  if (!name || !address) {
+    alert('Vinsamlegast fylltu út nafn og heimilisfang.');
+    return;
+  }
+
+  // Sýna kvittun
+  const receiptSection = document.querySelector('.receipt');
+  receiptSection.querySelector('h2').textContent = 'Kvittun';
+  receiptSection.querySelector('p').textContent = `Takk fyrir að versla hjá okkur, ${name}! Vörurnar verða sendar á heimilisfangið ${address}.`;
+  
+  // Hér gætirðu viljað bæta við kóða til að senda gögnin á bakenda eða vista þau á einhvern hátt
+
+  // Hreinsa körfuna
+  const cartContent = document.querySelector('.cart-content tbody');
+  while (cartContent.firstChild) {
+    cartContent.removeChild(cartContent.firstChild);
+  }
+  updateCartTotal(); // Uppfæra heildarverðið í körfunni
+
+  // Fela körfu og sýna kvittun
+  showCartContent(false);
+  receiptSection.classList.remove('hidden');
+
+  // Endurstilla formið
+  event.target.reset();
+}
+
+// Bæta við event listener á pöntunarformið
+const checkoutForm = document.querySelector('form[method="post"]');
+checkoutForm.addEventListener('submit', handleCheckout);
+
+
 /** Bæta vöru í körfu */
 function addProductToCart(product, quantity) {
   // Hér þarf að finna `<tbody>` í töflu og setja `cartLine` inn í það
