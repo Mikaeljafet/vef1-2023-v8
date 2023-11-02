@@ -1,4 +1,6 @@
 import { createCartLine, showCartContent } from './lib/ui.js';
+import { formatNumber } from './lib/helpers.js';
+
 
 const products = [
   {
