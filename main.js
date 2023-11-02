@@ -43,7 +43,7 @@ function handleCheckout(event) {
   // Hér gætirðu viljað bæta við kóða til að senda gögnin á bakenda eða vista þau á einhvern hátt
 
   // Hreinsa körfuna
-  const cartContent = document.querySelector('.cart-content tbody');
+  const cartContent = document.querySelector('.table tbody');
   while (cartContent.firstChild) {
     cartContent.removeChild(cartContent.firstChild);
   }
@@ -75,7 +75,7 @@ function addProductToCart(product, quantity) {
   const cartTableBody = document.querySelector('.cart table tbody');
 
   if (!cart) {
-    console.warn('fann ekki .cart-content tbody');
+    console.warn('fann ekki .table tbody');
     return;
   }
   
