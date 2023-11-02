@@ -35,17 +35,6 @@ function handleCheckout(event) {
     alert('Vinsamlegast fylltu út nafn og heimilisfang.');
     return;
   }
-
-  document.addEventListener('DOMContentLoaded', (event) => {
-    // Bæta við event listener á pöntunarformið
-    const checkoutForm = document.querySelector('form:not(.add)');
-    if (checkoutForm) {
-      checkoutForm.addEventListener('submit', handleCheckout);
-    } else {
-      console.error('Pöntunarform fannst ekki!');
-    }
-  });
-
   // Sýna kvittun
   const receiptSection = document.querySelector('.receipt');
   receiptSection.querySelector('h2').textContent = 'Kvittun';
@@ -69,8 +58,15 @@ function handleCheckout(event) {
 }
 
 // Bæta við event listener á pöntunarformið
-const checkoutForm = document.querySelector('form[method="post"]');
-checkoutForm.addEventListener('submit', handleCheckout);
+document.addEventListener('DOMContentLoaded', (event) => {
+  // Bæta við event listener á pöntunarformið sem ekki hefur class="add"
+  const checkoutForm = document.querySelector('form[method="post"]:not(.add)');
+  if (checkoutForm) {
+    checkoutForm.addEventListener('submit', handleCheckout);
+  } else {
+    console.error('Pöntunarform fannst ekki!');
+  }
+});
 
 
 /** Bæta vöru í körfu */
