@@ -2,6 +2,7 @@ import { createCartLine, showCartContent } from './lib/ui.js';
 import { formatNumber } from './lib/helpers.js';
 
 
+
 const products = [
   {
     id: 1,
@@ -106,7 +107,7 @@ function addProductToCart(product, quantity) {
   updateCartTotal();
 }
 
-  export function updateCartTotal() {
+export function updateCartTotal() {
   // Finna allar línur í körfunni
   const cartLines = document.querySelectorAll('tr[data-cart-product-id]');
   let total = 0;
@@ -114,44 +115,56 @@ function addProductToCart(product, quantity) {
   // Reikna heildarverðið
   cartLines.forEach(line => {
     const priceElement = line.querySelector('.total .price');
-    const priceText = priceElement.textContent.replace(' kr.-', '').replace(/\./g, '').replace(',', '.');
+    // Fjarlægja 'ISK' og ' kr.-', breyta punktum í ekkert og kommum í punkta
+    const priceText = priceElement.textContent.replace('ISK', '').replace(' kr.-', '').trim().replace(/\./g, '').replace(',', '');
     const price = parseFloat(priceText);
-    total += price;
+    if (!isNaN(price)) {
+      total += price;
+    } else {
+      console.error('Price is NaN for line:', line);
+    }
   });
 
   // Uppfæra heildarverðið í DOM
-  const totalElement = document.querySelector('.cart-total .price'); // Gæti þurft að breyta vísuninni ef heildarverðið er staðsett annars staðar
+  const totalElement = document.querySelector('.cart-total .price');
   if (totalElement) {
-    totalElement.textContent = `${formatNumber(total)} kr.-`;
+    // Nota formatNumber fallið til að sýna heildarverðið með réttu sniði
+    totalElement.textContent = formatNumber(total); // Ekki þörf á að bæta við " kr.-" hér
   }
+  // Athuga hvort körfan er tóm og sýna/hylja skilaboðin "Ekkert í körfu"
+  showCartContent(cartLines.length > 0);
+  
 }
 
-function submitHandler(event) {
-  // Komum í veg fyrir að form submiti
-  event.preventDefault();
-  
-  // Finnum næsta element sem er `<tr>`
-  const parent = event.target.closest('tr');
 
-  // Það er með attribute sem tiltekur auðkenni vöru, t.d. `data-product-id="1"`
+
+
+function submitHandler(event) {
+  event.preventDefault();
+
+  const parent = event.target.closest('tr');
   const productId = Number.parseInt(parent.dataset.productId);
 
-  // Finnum vöru með þessu productId
+  console.log('productId:', productId); // Skoða productId
+
   const product = products.find((p) => p.id === productId);
 
-  // Finnum input elementið fyrir fjölda og náum í fjöldann
-  const quantityInput = parent.querySelector('input[type="number"]');
-  const quantity = parseInt(quantityInput.value, 10); // Þetta tryggir að við fáum töluna í tugakerfi
+  console.log('product:', product); // Skoða fundna vöru
 
-  // Athugum hvort fjöldinn sé gildur
+  const quantityInput = parent.querySelector('input[type="number"]');
+  const quantity = parseInt(quantityInput.value, 10);
+
+  console.log('quantityInput value:', quantityInput.value); // Skoða inntaksgildið
+  console.log('quantity:', quantity); // Skoða umbreytt fjölda
+
   if (isNaN(quantity) || quantity <= 0) {
     console.error('Fjöldi er ekki gildur');
     return;
   }
 
-  // Bætum vöru í körfu
   addProductToCart(product, quantity);
 }
+
 
 // Finna öll form með class="add"
 const addToCartForms = document.querySelectorAll('.add')
@@ -162,4 +175,4 @@ for (const form of Array.from(addToCartForms)) {
   form.addEventListener('submit', submitHandler);
 }
 
-// TODO bæta við event handler á form sem submittar pöntun
+
