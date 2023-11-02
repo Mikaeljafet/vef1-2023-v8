@@ -112,7 +112,8 @@ function addProductToCart(product, quantity) {
   // Reikna heildarverðið
   cartLines.forEach(line => {
     const priceElement = line.querySelector('.total .price');
-    const price = parseFloat(priceElement.textContent.replace(' kr.-', '').replace('.', ''));
+    const priceText = priceElement.textContent.replace(' kr.-', '').replace(/\./g, '').replace(',', '.');
+    const price = parseFloat(priceText);
     total += price;
   });
 
