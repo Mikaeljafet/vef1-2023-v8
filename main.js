@@ -72,9 +72,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
 /** Bæta vöru í körfu */
 function addProductToCart(product, quantity) {
   // Hér þarf að finna `<tbody>` í töflu og setja `cartLine` inn í það
-  const cartTableBody = document.querySelector('.cart-table tbody');
+  const cart = document.querySelector('.cart-table tbody');
 
-  if (!cartTableBody) {
+  if (!cart) {
     console.warn('fann ekki .cart-content tbody');
     return;
   }
